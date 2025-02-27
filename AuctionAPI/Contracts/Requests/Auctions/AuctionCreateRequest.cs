@@ -1,3 +1,3 @@
 ﻿namespace AuctionAPI.Contracts.Requests.Auctions;
 
-public record AuctionCreateRequest(DateTime Start, DateTime End);
+public record AuctionCreateRequest(string Title, DateTime Start, DateTime End);

@@ -1,3 +1,3 @@
 ﻿namespace AuctionAPI.Contracts.Requests.Auctions;
 
-public record AuctionUpdateRequest(DateTime Start, DateTime End);
+public record AuctionUpdateRequest(string Title, DateTime Start, DateTime End);
