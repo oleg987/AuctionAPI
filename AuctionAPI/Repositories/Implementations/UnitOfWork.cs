@@ -11,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly ILogger<UnitOfWork> _logger;
 
     public IAuctionRepository AuctionRepository { get; }
+    public IUserRepository UserRepository { get; }
 
     public UnitOfWork(IDbConnectionFactory connectionFactory, ILogger<UnitOfWork> logger)
     {
@@ -20,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
         _transaction = _connection.BeginTransaction();
 
         AuctionRepository = new DapperAuctionRepository(_connection, _transaction);
+        UserRepository = new DapperUserRepository(_connection, _transaction);
     }
 
     public void Commit()

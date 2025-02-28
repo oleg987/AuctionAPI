@@ -19,6 +19,8 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddTransient<IAuctionService, AuctionService>();
 
+builder.Services.AddTransient<IUserService, UserService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
