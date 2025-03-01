@@ -24,11 +24,11 @@ public class DapperAuctionRepository : IAuctionRepository
         return await _connection.ExecuteScalarAsync<Guid>(sql, entity, _transaction);
     }
 
-    public async Task<Auction> GetById(Guid id)
+    public async Task<Auction?> GetById(Guid id)
     {
         var sql = $"select * from {_table} where id = @Id;";
 
-        return await _connection.QuerySingleAsync<Auction>(sql, new {Id = id}, _transaction);
+        return await _connection.QuerySingleOrDefaultAsync<Auction>(sql, new {Id = id}, _transaction);
     }
 
     public async Task<IEnumerable<Auction>> GetAll()

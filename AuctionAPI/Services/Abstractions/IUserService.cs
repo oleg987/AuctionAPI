@@ -1,5 +1,6 @@
 ﻿using AuctionAPI.Contracts.Requests.Users;
 using AuctionAPI.Contracts.Responses;
+using AuctionAPI.Contracts.Responses.Users;
 
 namespace AuctionAPI.Services.Abstractions;
 

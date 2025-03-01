@@ -12,6 +12,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IAuctionRepository AuctionRepository { get; }
     public IUserRepository UserRepository { get; }
+    public ILotRepository LotRepository { get; }
 
     public UnitOfWork(IDbConnectionFactory connectionFactory, ILogger<UnitOfWork> logger)
     {
@@ -22,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
 
         AuctionRepository = new DapperAuctionRepository(_connection, _transaction);
         UserRepository = new DapperUserRepository(_connection, _transaction);
+        LotRepository = new DapperLotRepository(_connection, _transaction);
     }
 
     public void Commit()
