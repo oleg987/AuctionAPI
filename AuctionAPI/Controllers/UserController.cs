@@ -1,4 +1,5 @@
 ﻿using AuctionAPI.Contracts.Requests.Users;
+using AuctionAPI.Contracts.Responses.Users;
 using AuctionAPI.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 

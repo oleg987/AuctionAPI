@@ -1,6 +1,7 @@
 ﻿using AuctionAPI.Contracts.Requests.Users;
 using AuctionAPI.Contracts.Responses;
 using AuctionAPI.Contracts.Responses.Users;
+using AuctionAPI.Exceptions;
 using AuctionAPI.Models;
 using AuctionAPI.Repositories.Abstractions;
 using AuctionAPI.Services.Abstractions;
@@ -16,7 +17,7 @@ public class UserService : IUserService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<UserResponse?> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<UserResponse> GetById(Guid id, CancellationToken cancellationToken)
     {
         var user = await _unitOfWork.UserRepository.GetById(id, cancellationToken);
         
@@ -26,8 +27,8 @@ public class UserService : IUserService
 
             return response;
         }
-        
-        return null;
+
+        throw new NotFoundException($"User with Id: {id} does not exists.");
     }
 
     public async Task<UserResponse> Create(UserCreateRequest request, CancellationToken cancellationToken)
@@ -46,14 +47,9 @@ public class UserService : IUserService
 
         var id = await _unitOfWork.UserRepository.Create(user, cancellationToken);
 
-        var createdUser = await _unitOfWork.UserRepository.GetById(id, cancellationToken);
+        var createdUser = (await _unitOfWork.UserRepository.GetById(id, cancellationToken))!;
         
         _unitOfWork.Commit();
-
-        if (createdUser is null)
-        {
-            throw new ArgumentException();
-        }
         
         var response = new UserResponse(createdUser.Id, createdUser.Email, createdUser.Name);
         

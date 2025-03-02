@@ -62,14 +62,7 @@ public class AuctionService : IAuctionService
     {
         var entities = await _auctionRepository.GetAll(cancellationToken);
 
-        var response = new List<AuctionResponse>();
-
-        foreach (var entity in entities)
-        {
-            response.Add(new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish));
-        }
-
-        return response;
+        return entities.Select(entity => new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish));
     }
 
     public async Task<AuctionResponse> Update(Guid id, AuctionUpdateRequest request, CancellationToken cancellationToken)
@@ -101,13 +94,13 @@ public class AuctionService : IAuctionService
         return response;
     }
 
-    public async Task<AuctionResponse?> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<AuctionResponse> Delete(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _auctionRepository.GetById(id, cancellationToken);
 
         if (entity is null)
         {
-            return null;
+            throw new NotFoundException($"Auction with Id: {id} does not exist.");
         }
         
         await _auctionRepository.Delete(id, cancellationToken);

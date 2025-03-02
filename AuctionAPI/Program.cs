@@ -1,4 +1,6 @@
+using AuctionAPI.Exceptions;
 using AuctionAPI.Infrastructure;
+using AuctionAPI.Infrastructure.ExceptionHandlers;
 using AuctionAPI.Repositories.Abstractions;
 using AuctionAPI.Repositories.Implementations;
 using AuctionAPI.Services.Abstractions;
@@ -25,6 +27,11 @@ builder.Services.AddTransient<ILotService, LotService>();
 
 builder.Services.AddTransient<IBidService, BidService>();
 
+builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
+builder.Services.AddExceptionHandler<CustomValidationExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,6 +44,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseExceptionHandler();
 
 app.MapControllers();
 
