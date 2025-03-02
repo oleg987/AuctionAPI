@@ -7,7 +7,7 @@ public class InMemoryAuctionRepository : IAuctionRepository
 {
     private static readonly List<Auction> _storage = [];
     
-    public Task<Guid> Create(Auction entity)
+    public Task<Guid> Create(Auction entity, CancellationToken cancellationToken)
     {
         entity.Id = Guid.NewGuid();
         _storage.Add(entity);
@@ -15,17 +15,17 @@ public class InMemoryAuctionRepository : IAuctionRepository
         return Task.FromResult(entity.Id);
     }
 
-    public Task<Auction> GetById(Guid id)
+    public Task<Auction?> GetById(Guid id, CancellationToken cancellationToken)
     {
-        return Task.FromResult(_storage.First(a => a.Id == id));
+        return Task.FromResult(_storage.FirstOrDefault(a => a.Id == id));
     }
 
-    public Task<IEnumerable<Auction>> GetAll()
+    public Task<IEnumerable<Auction>> GetAll(CancellationToken cancellationToken)
     {
         return Task.FromResult<IEnumerable<Auction>>(_storage);
     }
 
-    public Task Update(Auction entity)
+    public Task Update(Auction entity, CancellationToken cancellationToken)
     {
         var record = _storage.First(r => r.Id == entity.Id);
 
@@ -36,7 +36,7 @@ public class InMemoryAuctionRepository : IAuctionRepository
         return Task.CompletedTask;
     }
 
-    public Task Delete(Guid id)
+    public Task Delete(Guid id, CancellationToken cancellationToken)
     {
         var record = _storage.First(r => r.Id == id);
         

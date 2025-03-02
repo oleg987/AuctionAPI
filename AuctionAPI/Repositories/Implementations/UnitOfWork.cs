@@ -13,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     public IAuctionRepository AuctionRepository { get; }
     public IUserRepository UserRepository { get; }
     public ILotRepository LotRepository { get; }
+    public IBidRepository BidRepository { get; }
 
     public UnitOfWork(IDbConnectionFactory connectionFactory, ILogger<UnitOfWork> logger)
     {
@@ -24,6 +25,7 @@ public class UnitOfWork : IUnitOfWork
         AuctionRepository = new DapperAuctionRepository(_connection, _transaction);
         UserRepository = new DapperUserRepository(_connection, _transaction);
         LotRepository = new DapperLotRepository(_connection, _transaction);
+        BidRepository = new DapperBidRepository(_connection, _transaction);
     }
 
     public void Commit()
@@ -40,7 +42,7 @@ public class UnitOfWork : IUnitOfWork
         finally
         {
             _transaction.Dispose();
-            _connection.Close();
+            _connection.Dispose();
         }
     }
 
@@ -48,12 +50,11 @@ public class UnitOfWork : IUnitOfWork
     {
         _transaction.Rollback();
         _transaction.Dispose();
-        _connection.Close();
+        _connection.Dispose();
     }
     
     public void Dispose()
     {
-        _logger.LogInformation($"{DateTime.Now}: Disposed.");
         _transaction.Dispose();
         _connection.Dispose();
     }

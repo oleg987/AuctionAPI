@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using AuctionAPI.Models;
 using AuctionAPI.Repositories.Abstractions;
+using Dapper;
 
 namespace AuctionAPI.Repositories.Implementations;
 
@@ -17,13 +18,34 @@ public class DapperBidRepository : IBidRepository
         _transaction = transaction;
     }
 
-    public Task<IEnumerable<Bid>> GetByAuctionId(Guid auctionId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Bid>> GetByAuctionId(Guid auctionId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var sql = $@"
+                select b.* from {_table} as b
+                    join lots as l on l.id = b.lot_id
+                    join auctions as a on a.id = l.auction_id
+                order by b.created_at desc
+                where a.id = @AuctionId;";
+
+        return await _connection.QueryAsync<Bid>(sql, new { AuctionId = auctionId }, _transaction);
     }
 
-    public Task PlaceBid(Bid request, CancellationToken cancellationToken)
+    public async Task PlaceBid(Bid entity, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var sql = $"insert into {_table} (user_id, lot_id, price, created_at) values (@UserId, @LotId, @Price, @CreatedAt);";
+
+        await _connection.ExecuteScalarAsync(sql, entity, _transaction);
+    }
+
+    public async Task<Bid?> GetLastBidByAuctionId(Guid auctionId, CancellationToken cancellationToken)
+    {
+        var sql = $@"
+                select top 1 b.* from {_table} as b
+                    join lots as l on l.id = b.lot_id
+                    join auctions as a on a.id = l.auction_id
+                order by b.created_at desc
+                where a.id = @AuctionId;";
+
+        return await _connection.QueryFirstOrDefaultAsync<Bid>(sql, new { AuctionId = auctionId }, _transaction);
     }
 }

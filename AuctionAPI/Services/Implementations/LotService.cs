@@ -38,7 +38,7 @@ public class LotService : ILotService
     
     public async Task<LotResponse?> Create(LotCreateRequest request, CancellationToken cancellationToken)
     {
-        var auction = await _unitOfWork.AuctionRepository.GetById(request.AuctionId);
+        var auction = await _unitOfWork.AuctionRepository.GetById(request.AuctionId, cancellationToken);
 
         if (auction is null || auction.Start < DateTime.Now)
         {
@@ -79,7 +79,7 @@ public class LotService : ILotService
             return null;
         }
         
-        var auction = await _unitOfWork.AuctionRepository.GetById(lot.AuctionId);
+        var auction = await _unitOfWork.AuctionRepository.GetById(lot.AuctionId, cancellationToken);
 
         if (auction is null || auction.Start < DateTime.Now)
         {
@@ -113,7 +113,7 @@ public class LotService : ILotService
             return null;
         }
         
-        var auction = await _unitOfWork.AuctionRepository.GetById(lot.AuctionId);
+        var auction = await _unitOfWork.AuctionRepository.GetById(lot.AuctionId, cancellationToken);
 
         if (auction is not null && auction.Start < DateTime.Now)
         {

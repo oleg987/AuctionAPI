@@ -20,8 +20,8 @@ public class DapperLotRepository : ILotRepository
 
     public async Task<Lot?> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var sql = $"select * from {_table} where id = @Id;";
-
+        var sql = $"select id, auction_id as AuctionId, title, description, start_price as StartPrice from {_table} where id = @Id;";
+        
         return await _dbConnection.QuerySingleOrDefaultAsync<Lot>(sql, new { Id = id }, _transaction);
     }
 

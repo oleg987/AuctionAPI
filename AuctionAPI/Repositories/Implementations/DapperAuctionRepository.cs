@@ -17,28 +17,28 @@ public class DapperAuctionRepository : IAuctionRepository
         _transaction = transaction;
     }
 
-    public async Task<Guid> Create(Auction entity)
+    public async Task<Guid> Create(Auction entity, CancellationToken cancellationToken)
     {
         var sql = $"insert into {_table} (id, title, start, finish) values (@Id, @Title, @Start, @Finish) returning id;";
 
         return await _connection.ExecuteScalarAsync<Guid>(sql, entity, _transaction);
     }
 
-    public async Task<Auction?> GetById(Guid id)
+    public async Task<Auction?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var sql = $"select * from {_table} where id = @Id;";
 
         return await _connection.QuerySingleOrDefaultAsync<Auction>(sql, new {Id = id}, _transaction);
     }
 
-    public async Task<IEnumerable<Auction>> GetAll()
+    public async Task<IEnumerable<Auction>> GetAll(CancellationToken cancellationToken)
     {
         var sql = $"select * from {_table};";
 
         return await _connection.QueryAsync<Auction>(sql, transaction: _transaction);
     }
 
-    public async Task Update(Auction entity)
+    public async Task Update(Auction entity, CancellationToken cancellationToken)
     {
         var sql = $@"update {_table} 
                         set title = @Title,
@@ -49,7 +49,7 @@ public class DapperAuctionRepository : IAuctionRepository
         await _connection.ExecuteScalarAsync(sql, entity, _transaction);
     }
 
-    public async Task Delete(Guid id)
+    public async Task Delete(Guid id, CancellationToken cancellationToken)
     {
         var sql = $"delete from {_table} where id = @Id;";
 

@@ -17,7 +17,7 @@ public class AuctionService : IAuctionService
         _auctionRepository = unitOfWork.AuctionRepository;
     }
 
-    public async Task<AuctionResponse> Create(AuctionCreateRequest request, CancellationToken cancellationToken)
+    public async Task<AuctionResponse?> Create(AuctionCreateRequest request, CancellationToken cancellationToken)
     {
         var auction = new Auction()
         {
@@ -27,29 +27,39 @@ public class AuctionService : IAuctionService
             Finish = request.End
         };
 
-        var id = await _auctionRepository.Create(auction);
+        var id = await _auctionRepository.Create(auction, cancellationToken);
 
-        var entity = await _auctionRepository.GetById(id);
+        var entity = await _auctionRepository.GetById(id, cancellationToken);
 
         _unitOfWork.Commit();
+
+        if (entity is not null)
+        {
+            var response = new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish);
         
-        var response = new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish);
-        
-        return response;
+            return response;
+        }
+
+        return null;
     }
 
-    public async Task<AuctionResponse> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<AuctionResponse?> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _auctionRepository.GetById(id);
+        var entity = await _auctionRepository.GetById(id, cancellationToken);
 
-        var response = new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish);
+        if (entity is not null)
+        {
+            var response = new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish);
         
-        return response;
+            return response;
+        }
+
+        return null;
     }
 
     public async Task<IEnumerable<AuctionResponse>> GetAll(CancellationToken cancellationToken)
     {
-        var entities = await _auctionRepository.GetAll();
+        var entities = await _auctionRepository.GetAll(cancellationToken);
 
         var response = new List<AuctionResponse>();
 
@@ -61,30 +71,45 @@ public class AuctionService : IAuctionService
         return response;
     }
 
-    public async Task<AuctionResponse> Update(Guid id, AuctionUpdateRequest request, CancellationToken cancellationToken)
+    public async Task<AuctionResponse?> Update(Guid id, AuctionUpdateRequest request, CancellationToken cancellationToken)
     {
-        var entity = await _auctionRepository.GetById(id);
+        var entity = await _auctionRepository.GetById(id, cancellationToken);
 
+        if (entity is null)
+        {
+            return null;
+        }
+        
         entity.Title = request.Title;
         entity.Start = request.Start;
         entity.Finish = request.End;
 
-        await _auctionRepository.Update(entity);
+        await _auctionRepository.Update(entity, cancellationToken);
         
-        var updated = await _auctionRepository.GetById(id);
+        var updated = await _auctionRepository.GetById(id, cancellationToken);
         
         _unitOfWork.Commit();
-        
-        var response = new AuctionResponse(updated.Id, updated.Title, updated.Start, updated.Finish);
 
-        return response;
+        if (updated is not null)
+        {
+            var response = new AuctionResponse(updated.Id, updated.Title, updated.Start, updated.Finish);
+
+            return response;
+        }
+
+        return null;
     }
 
-    public async Task<AuctionResponse> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<AuctionResponse?> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _auctionRepository.GetById(id);
+        var entity = await _auctionRepository.GetById(id, cancellationToken);
+
+        if (entity is null)
+        {
+            return null;
+        }
         
-        await _auctionRepository.Delete(id);
+        await _auctionRepository.Delete(id, cancellationToken);
         
         _unitOfWork.Commit();
             

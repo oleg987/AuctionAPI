@@ -21,6 +21,10 @@ builder.Services.AddTransient<IAuctionService, AuctionService>();
 
 builder.Services.AddTransient<IUserService, UserService>();
 
+builder.Services.AddTransient<ILotService, LotService>();
+
+builder.Services.AddTransient<IBidService, BidService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
