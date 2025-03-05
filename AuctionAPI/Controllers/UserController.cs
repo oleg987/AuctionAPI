@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionAPI.Controllers;
 
+public record SignInRequest(string Email, string Password);
+
+public record SignUpRequest(string Name, string Email, string Password);
+
 [ApiController]
 [Route("api/v1/[controller]")]
 public class UserController : ControllerBase
@@ -16,30 +20,38 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+    [HttpPost]
+    [Route("sign-in")]
+    public async Task<IActionResult> SignIn(SignInRequest request, CancellationToken cancellationToken)
     {
-        var response = await _userService.GetById(id, cancellationToken);
-
-        if (response is not null)
+        if (request.Email == "test@example.com" && request.Password == "12345")
         {
-            return Ok(response);
+            return Ok(new { Id = Guid.NewGuid(), Name = "John", Email = "test@example.com" });
+        }
+
+        return Unauthorized();
+    }
+    
+    [HttpPost]
+    [Route("sign-up")]
+    public async Task<IActionResult> SignUp(SignUpRequest request, CancellationToken cancellationToken)
+    {
+        if (request.Email == "test@example.com" && request.Password == "12345")
+        {
+            return Ok(new { Id = Guid.NewGuid(), Name = "John", Email = "test@example.com" });
         }
         
-        return NotFound();
-    }
+        GC.Collect();
+        // mark
+        // check references
+        // collect gen 0
+        // check memory
+        // collect gen 1
+        // check memory
+        // collect gen 2
+        // check memory
+        // collect gen 3/4
 
-    [HttpPost]
-    public async Task<IActionResult> Post(UserCreateRequest request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var response = await _userService.Create(request, cancellationToken);
-            return Ok(response);
-        }
-        catch
-        {
-            return BadRequest();
-        }
+        return Unauthorized();
     }
 }

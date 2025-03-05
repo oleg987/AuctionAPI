@@ -58,9 +58,23 @@ public class AuctionService : IAuctionService
         throw new NotFoundException($"Auction with Id: {id} does not exist.");
     }
 
-    public async Task<IEnumerable<AuctionResponse>> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<AuctionResponse>> Past(CancellationToken cancellationToken)
     {
-        var entities = await _auctionRepository.GetAll(cancellationToken);
+        var entities = await _auctionRepository.GetPast(cancellationToken);
+
+        return entities.Select(entity => new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish));
+    }  
+    
+    public async Task<IEnumerable<AuctionResponse>> Active(CancellationToken cancellationToken)
+    {
+        var entities = await _auctionRepository.GetActive(cancellationToken);
+
+        return entities.Select(entity => new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish));
+    }
+    
+    public async Task<IEnumerable<AuctionResponse>> Future(CancellationToken cancellationToken)
+    {
+        var entities = await _auctionRepository.GetFuture(cancellationToken);
 
         return entities.Select(entity => new AuctionResponse(entity.Id, entity.Title, entity.Start, entity.Finish));
     }

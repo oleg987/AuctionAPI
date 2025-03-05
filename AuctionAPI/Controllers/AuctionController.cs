@@ -29,9 +29,30 @@ public class AuctionController : ControllerBase
     
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<AuctionResponse>))]
-    public async Task<IActionResult> Get(CancellationToken cancellationToken)
+    [Route("active")]
+    public async Task<IActionResult> Active(CancellationToken cancellationToken)
     {
-        var models = await _auctionService.GetAll(cancellationToken);
+        var models = await _auctionService.Active(cancellationToken);
+
+        return Ok(models);
+    }
+    
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<AuctionResponse>))]
+    [Route("future")]
+    public async Task<IActionResult> Future(CancellationToken cancellationToken)
+    {
+        var models = await _auctionService.Future(cancellationToken);
+
+        return Ok(models);
+    }
+    
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<AuctionResponse>))]
+    [Route("past")]
+    public async Task<IActionResult> Past(CancellationToken cancellationToken)
+    {
+        var models = await _auctionService.Past(cancellationToken);
 
         return Ok(models);
     }

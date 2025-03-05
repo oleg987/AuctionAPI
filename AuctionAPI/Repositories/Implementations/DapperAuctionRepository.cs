@@ -31,10 +31,24 @@ public class DapperAuctionRepository : IAuctionRepository
         return await _connection.QuerySingleOrDefaultAsync<Auction>(sql, new {Id = id}, _transaction);
     }
 
-    public async Task<IEnumerable<Auction>> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Auction>> GetPast(CancellationToken cancellationToken)
     {
-        var sql = $"select * from {_table};";
+        var sql = $"select * from {_table} where finish < current_timestamp;";
 
+        return await _connection.QueryAsync<Auction>(sql, transaction: _transaction);
+    }
+
+    public async Task<IEnumerable<Auction>> GetActive(CancellationToken cancellationToken)
+    {
+        var sql = $"select * from {_table} where start > current_timestamp and finish < current_timestamp;";
+
+        return await _connection.QueryAsync<Auction>(sql, transaction: _transaction);
+    }
+
+    public async Task<IEnumerable<Auction>> GetFuture(CancellationToken cancellationToken)
+    {
+        var sql = $"select * from {_table} where start > current_timestamp and finish > current_timestamp;";
+        
         return await _connection.QueryAsync<Auction>(sql, transaction: _transaction);
     }
 
